@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRepos } from '../hooks/useRepos.ts'
 import { useRepoFilters } from '../hooks/useRepoFilters.ts'
@@ -12,17 +12,10 @@ export function RepoListPage() {
   const { q, lang, sort, setParam, languages, filtered } = useRepoFilters(data ?? [])
   const parentRef = useRef<HTMLDivElement>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
-  const didFocus = useRef(false)
 
-  // Move focus to the page heading once the data-loaded state first renders.
-  // No dep array: runs after every render so it catches the transition from
-  // loading → content (when headingRef first becomes non-null).
   useEffect(() => {
-    if (!didFocus.current && headingRef.current !== null) {
-      headingRef.current.focus()
-      didFocus.current = true
-    }
-  })
+    headingRef.current?.focus()
+  }, [])
 
   const rowVirtualizer = useVirtualizer({
     count: filtered.length,
@@ -47,6 +40,11 @@ export function RepoListPage() {
 
   return (
     <main>
+      <nav aria-label="Breadcrumb">
+        <Link to="/" aria-label="Back to search">
+          <span aria-hidden="true">←</span>{' '}New search
+        </Link>
+      </nav>
       <h1 ref={headingRef} tabIndex={-1}>{username}</h1>
       <div role="group" aria-label="Filter and sort repositories">
         <input
@@ -103,6 +101,7 @@ export function RepoListPage() {
               return (
                 <li
                   key={virtualItem.key}
+                  className="repo-row"
                   data-index={virtualItem.index}
                   style={{
                     position: 'absolute',

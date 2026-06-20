@@ -8,14 +8,16 @@ interface RepoCardProps {
 
 export function RepoCard({ repo, username }: RepoCardProps) {
   return (
-    <article>
-      <Link to={`/user/${username}/${repo.name}`}>
-        {repo.name}
-      </Link>
-      {repo.description !== null && <p>{repo.description}</p>}
-      <span>{repo.language ?? '—'}</span>
-      <span><span aria-hidden="true">★</span> {repo.stargazers_count}<span className="sr-only"> stars</span></span>
-      <span>Updated {new Date(repo.updated_at).toLocaleDateString()}</span>
+    <article className="repo-card">
+      <div className="repo-card-body">
+        <Link to={`/user/${username}/${repo.name}`}>{repo.name}</Link>
+        {repo.description !== null && <p>{repo.description}</p>}
+      </div>
+      <div className="repo-card-meta">
+        <span>{repo.language ?? '—'}</span>
+        <span><span aria-hidden="true">★</span> {repo.stargazers_count}<span className="sr-only"> stars</span></span>
+        <span>Updated {new Date(repo.updated_at).toLocaleDateString()}</span>
+      </div>
     </article>
   )
 }
