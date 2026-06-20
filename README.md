@@ -1,6 +1,12 @@
-# React + TypeScript + Vite
+# GitHub Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A dashboard over GitHub repo data. Enter a GitHub username, see their public repos in a filterable and sortable list. Click a repo to see its description, stats, language breakdown, recent commits, and a visualization.
+
+## Decisions & trade-offs
+
+**GitHub API responses use an unchecked cast (`unknown as T`).** There is no runtime schema validation (e.g. Zod). This is a deliberate choice: the GitHub REST API is read-only, public, and well-documented, so the cost of a schema mismatch is a UI glitch rather than a security issue. On a time-boxed task the added complexity of Zod schemas for every endpoint isn't justified. Runtime validation is the first thing I'd add with more time.
+
+**`fetchUserRepos` fetches at most 100 repos (first page only).** GitHub's API returns a maximum of 100 results per page. Pagination is deferred to the list slice — at that point we can either implement cursor-based fetching or document the 100-repo cap to the user.
 
 Currently, two official plugins are available:
 
