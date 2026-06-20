@@ -5,9 +5,9 @@
         "hooks": [
           {
             "type": "command",
-            "command": "npm run typecheck",
-            "timeout": 30,
-            "statusMessage": "Type-checking..."
+            "command": "npm run typecheck && npm test -- --run",
+            "timeout": 60,
+            "statusMessage": "Type-checking and running tests..."
           }
         ]
       }
