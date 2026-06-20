@@ -1,0 +1,90 @@
+import { useParams, Link } from 'react-router-dom'
+import { useRepo } from '../hooks/useRepo.ts'
+import { useLanguages } from '../hooks/useLanguages.ts'
+import { useCommits } from '../hooks/useCommits.ts'
+import { GithubError } from '../lib/github/index.ts'
+import { LanguageBar } from '../components/LanguageBar.tsx'
+
+export function RepoDetailPage() {
+  const { username, repo: repoName } = useParams<{ username: string; repo: string }>()
+
+  const repoQuery = useRepo(username ?? '', repoName ?? '')
+  const languagesQuery = useLanguages(username ?? '', repoName ?? '')
+  const commitsQuery = useCommits(
+    username ?? '',
+    repoName ?? '',
+    repoQuery.data?.default_branch ?? '',
+  )
+
+  if (!username || !repoName) return <p>Invalid URL.</p>
+
+  return (
+    <main>
+      <nav>
+        <Link to={`/user/${username}`}>← {username}</Link>
+      </nav>
+
+      <section aria-label="Repository overview">
+        {repoQuery.isLoading && <p>Loading repository…</p>}
+        {repoQuery.isError && (
+          repoQuery.error instanceof GithubError && repoQuery.error.status === 404
+            ? <p>Repository &quot;{repoName}&quot; not found.</p>
+            : <p>Error: {repoQuery.error.message}</p>
+        )}
+        {repoQuery.data !== undefined && (
+          <>
+            <h1>{repoQuery.data.name}</h1>
+            {repoQuery.data.description !== null && <p>{repoQuery.data.description}</p>}
+            <ul aria-label="Repository statistics">
+              <li>★ {repoQuery.data.stargazers_count} stars</li>
+              <li>{repoQuery.data.forks_count} forks</li>
+              <li>{repoQuery.data.open_issues_count} open issues</li>
+            </ul>
+          </>
+        )}
+      </section>
+
+      {repoQuery.data !== undefined && (
+        <section aria-label="Language breakdown">
+          <h2>Languages</h2>
+          {languagesQuery.isLoading && <p>Loading languages…</p>}
+          {languagesQuery.isError && <p>Error loading languages: {languagesQuery.error.message}</p>}
+          {languagesQuery.data !== undefined && (
+            Object.keys(languagesQuery.data).length === 0
+              ? <p>No language data available.</p>
+              : <LanguageBar languages={languagesQuery.data} />
+          )}
+        </section>
+      )}
+
+      {repoQuery.data !== undefined && (
+        <section aria-label="Recent commits">
+          <h2>Recent commits</h2>
+          {commitsQuery.isLoading && <p>Loading commits…</p>}
+          {commitsQuery.isError && <p>Error loading commits: {commitsQuery.error.message}</p>}
+          {commitsQuery.data !== undefined && (
+            commitsQuery.data.length === 0
+              ? <p>No commits yet — this repository is empty.</p>
+              : (
+                <ol>
+                  {commitsQuery.data.map((commit) => {
+                    const firstLine = commit.commit.message.split('\n')[0] ?? commit.commit.message
+                    const author = commit.author?.login ?? commit.commit.author.name
+                    return (
+                      <li key={commit.sha}>
+                        <a href={commit.html_url} target="_blank" rel="noreferrer">{firstLine}</a>
+                        <span> — {author}</span>
+                        <time dateTime={commit.commit.author.date}>
+                          {' '}{new Date(commit.commit.author.date).toLocaleDateString()}
+                        </time>
+                      </li>
+                    )
+                  })}
+                </ol>
+              )
+          )}
+        </section>
+      )}
+    </main>
+  )
+}

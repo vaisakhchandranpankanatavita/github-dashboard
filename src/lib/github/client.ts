@@ -27,6 +27,10 @@ async function get<T>(path: string): Promise<T> {
   return data as T
 }
 
+export function fetchRepo(owner: string, repo: string): Promise<GithubRepo> {
+  return get<GithubRepo>(`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`)
+}
+
 // per_page=100 is the first page only; pagination deferred to the list slice
 export function fetchUserRepos(username: string): Promise<GithubRepo[]> {
   return get<GithubRepo[]>(`/users/${encodeURIComponent(username)}/repos?per_page=100`)

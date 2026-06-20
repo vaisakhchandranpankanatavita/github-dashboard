@@ -95,7 +95,7 @@ export function RepoListPage() {
                     transform: `translateY(${virtualItem.start}px)`,
                   }}
                 >
-                  <RepoCard repo={repo} />
+                  <RepoCard repo={repo} username={username} />
                 </li>
               )
             })}
