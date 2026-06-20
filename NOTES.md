@@ -17,3 +17,5 @@ This file logs how I directed and corrected Claude Code during the build.
 - **JSX syntax error from a review fix.** A review fix (adding an explanatory comment) introduced a JSX syntax error that typecheck passed but crashed the dev server with a 500. Caught it by browser-testing, not the typecheck hook — reinforced that typecheck and the runtime build catch different errors.
 
 - **Filtering and sorting are in-memory, verified.** Filter and sort changes produce zero network requests — they run over the cached TanStack Query result. The query key intentionally excludes filter params so changing a filter never triggers a refetch.
+
+- **Orphaned "Recent commits" heading while repo loads.** The reviewer caught that the commits section heading rendered with empty content while the repo was still loading — the commits query waits for `default_branch`, so during repo load it had no data and no spinner, just a bare `<h2>`. Gated the whole section on `repoQuery.data !== undefined`. A UX bug typecheck couldn't catch — only visible by running the app.
