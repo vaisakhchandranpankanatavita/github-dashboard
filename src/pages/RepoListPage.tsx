@@ -64,10 +64,10 @@ export function RepoListPage() {
         </select>
       </div>
 
-      {filtered.length === 0 ? (
+      {// 70vh is a deliberate simple choice; revisit if a fixed header/footer is added
+      filtered.length === 0 ? (
         <p>No repositories match the current filters.</p>
       ) : (
-        {/* 70vh is a deliberate simple choice; revisit if a fixed header/footer is added */}
         <div ref={parentRef} style={{ height: '70vh', overflow: 'auto' }}>
           <ul
             aria-label={`Repositories for ${username}`}
