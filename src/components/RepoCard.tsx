@@ -6,7 +6,7 @@ interface RepoCardProps {
 
 export function RepoCard({ repo }: RepoCardProps) {
   return (
-    <li>
+    <article>
       <a href={repo.html_url} target="_blank" rel="noreferrer">
         {repo.name}
       </a>
@@ -14,6 +14,6 @@ export function RepoCard({ repo }: RepoCardProps) {
       <span>{repo.language ?? '—'}</span>
       <span>★ {repo.stargazers_count}</span>
       <span>Updated {new Date(repo.updated_at).toLocaleDateString()}</span>
-    </li>
+    </article>
   )
 }
