@@ -14,7 +14,7 @@ export function RepoCard({ repo, username }: RepoCardProps) {
       </Link>
       {repo.description !== null && <p>{repo.description}</p>}
       <span>{repo.language ?? '—'}</span>
-      <span>★ {repo.stargazers_count}</span>
+      <span><span aria-hidden="true">★</span> {repo.stargazers_count}<span className="sr-only"> stars</span></span>
       <span>Updated {new Date(repo.updated_at).toLocaleDateString()}</span>
     </article>
   )

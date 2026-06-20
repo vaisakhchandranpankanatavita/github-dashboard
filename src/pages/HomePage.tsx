@@ -1,9 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export function HomePage() {
   const [input, setInput] = useState('')
   const navigate = useNavigate()
+  const headingRef = useRef<HTMLHeadingElement>(null)
+
+  useEffect(() => {
+    headingRef.current?.focus()
+  }, [])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -14,7 +19,7 @@ export function HomePage() {
 
   return (
     <main>
-      <h1>GitHub Dashboard</h1>
+      <h1 ref={headingRef} tabIndex={-1}>GitHub Dashboard</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="text"

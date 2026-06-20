@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useRepos } from '../hooks/useRepos.ts'
@@ -11,6 +11,19 @@ export function RepoListPage() {
   const { data, isLoading, isError, error } = useRepos(username ?? '')
   const { q, lang, sort, setParam, languages, filtered } = useRepoFilters(data ?? [])
   const parentRef = useRef<HTMLDivElement>(null)
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const didFocus = useRef(false)
+
+  // Move focus to the page heading once the data-loaded state first renders.
+  // No dep array: runs after every render so it catches the transition from
+  // loading → content (when headingRef first becomes non-null).
+  useEffect(() => {
+    if (!didFocus.current && headingRef.current !== null) {
+      headingRef.current.focus()
+      didFocus.current = true
+    }
+  })
+
   const rowVirtualizer = useVirtualizer({
     count: filtered.length,
     getScrollElement: () => parentRef.current,
@@ -34,8 +47,8 @@ export function RepoListPage() {
 
   return (
     <main>
-      <h1>{username}</h1>
-      <div>
+      <h1 ref={headingRef} tabIndex={-1}>{username}</h1>
+      <div role="group" aria-label="Filter and sort repositories">
         <input
           type="search"
           value={q}
@@ -64,11 +77,15 @@ export function RepoListPage() {
         </select>
       </div>
 
+      <p role="status" aria-live="polite">
+        {filtered.length} {filtered.length === 1 ? 'repository' : 'repositories'}
+      </p>
+
       {// 70vh is a deliberate simple choice; revisit if a fixed header/footer is added
       filtered.length === 0 ? (
         <p>No repositories match the current filters.</p>
       ) : (
-        <div ref={parentRef} style={{ height: '70vh', overflow: 'auto' }}>
+        <div ref={parentRef} tabIndex={0} style={{ height: '70vh', overflow: 'auto' }}>
           <ul
             aria-label={`Repositories for ${username}`}
             style={{

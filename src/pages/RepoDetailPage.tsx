@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom'
+import { useEffect, useRef } from 'react'
 import { useRepo } from '../hooks/useRepo.ts'
 import { useLanguages } from '../hooks/useLanguages.ts'
 import { useCommits } from '../hooks/useCommits.ts'
@@ -16,12 +17,27 @@ export function RepoDetailPage() {
     repoQuery.data?.default_branch ?? '',
   )
 
+  const headingRef = useRef<HTMLHeadingElement>(null)
+  const didFocus = useRef(false)
+
+  useEffect(() => {
+    if (!didFocus.current && headingRef.current !== null) {
+      headingRef.current.focus()
+      didFocus.current = true
+    }
+  })
+
   if (!username || !repoName) return <p>Invalid URL.</p>
 
   return (
     <main>
-      <nav>
-        <Link to={`/user/${username}`}>← {username}</Link>
+      <nav aria-label="Breadcrumb">
+        <Link
+          to={`/user/${username}`}
+          aria-label={`Back to ${username}'s repositories`}
+        >
+          ← {username}
+        </Link>
       </nav>
 
       <section aria-label="Repository overview">
@@ -33,10 +49,10 @@ export function RepoDetailPage() {
         )}
         {repoQuery.data !== undefined && (
           <>
-            <h1>{repoQuery.data.name}</h1>
+            <h1 ref={headingRef} tabIndex={-1}>{repoQuery.data.name}</h1>
             {repoQuery.data.description !== null && <p>{repoQuery.data.description}</p>}
             <ul aria-label="Repository statistics">
-              <li>★ {repoQuery.data.stargazers_count} stars</li>
+              <li><span aria-hidden="true">★</span> {repoQuery.data.stargazers_count}<span className="sr-only"> stars</span></li>
               <li>{repoQuery.data.forks_count} forks</li>
               <li>{repoQuery.data.open_issues_count} open issues</li>
             </ul>
@@ -72,7 +88,10 @@ export function RepoDetailPage() {
                     const author = commit.author?.login ?? commit.commit.author.name
                     return (
                       <li key={commit.sha}>
-                        <a href={commit.html_url} target="_blank" rel="noreferrer">{firstLine}</a>
+                        <a href={commit.html_url} target="_blank" rel="noreferrer">
+                          {firstLine}
+                          <span className="sr-only"> (opens in new tab)</span>
+                        </a>
                         <span> — {author}</span>
                         <time dateTime={commit.commit.author.date}>
                           {' '}{new Date(commit.commit.author.date).toLocaleDateString()}
