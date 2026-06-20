@@ -18,14 +18,10 @@ export function RepoDetailPage() {
   )
 
   const headingRef = useRef<HTMLHeadingElement>(null)
-  const didFocus = useRef(false)
 
   useEffect(() => {
-    if (!didFocus.current && headingRef.current !== null) {
-      headingRef.current.focus()
-      didFocus.current = true
-    }
-  })
+    headingRef.current?.focus()
+  }, [])
 
   if (!username || !repoName) return <p>Invalid URL.</p>
 
@@ -51,7 +47,7 @@ export function RepoDetailPage() {
           <>
             <h1 ref={headingRef} tabIndex={-1}>{repoQuery.data.name}</h1>
             {repoQuery.data.description !== null && <p>{repoQuery.data.description}</p>}
-            <ul aria-label="Repository statistics">
+            <ul className="repo-stats" aria-label="Repository statistics">
               <li><span aria-hidden="true">★</span> {repoQuery.data.stargazers_count}<span className="sr-only"> stars</span></li>
               <li>{repoQuery.data.forks_count} forks</li>
               <li>{repoQuery.data.open_issues_count} open issues</li>
@@ -82,7 +78,7 @@ export function RepoDetailPage() {
             commitsQuery.data.length === 0
               ? <p>No commits yet — this repository is empty.</p>
               : (
-                <ol>
+                <ol className="repo-commits">
                   {commitsQuery.data.map((commit) => {
                     const firstLine = commit.commit.message.split('\n')[0] ?? commit.commit.message
                     const author = commit.author?.login ?? commit.commit.author.name

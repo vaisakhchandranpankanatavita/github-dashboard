@@ -20,8 +20,8 @@ describe('GitHub API client', () => {
 
     await fetchUserRepos('octocat')
 
-    const headers = capturedInit?.headers as Record<string, string> | undefined
-    expect(headers?.['Authorization']).toBe('Bearer test-token')
+    const headers = new Headers(capturedInit?.headers)
+    expect(headers.get('Authorization')).toBe('Bearer test-token')
   })
 
   it('omits Authorization header when VITE_GITHUB_TOKEN is not set', async () => {
@@ -37,8 +37,8 @@ describe('GitHub API client', () => {
 
     await fetchUserRepos('octocat')
 
-    const headers = capturedInit?.headers as Record<string, string> | undefined
-    expect(headers?.['Authorization']).toBeUndefined()
+    const headers = new Headers(capturedInit?.headers)
+    expect(headers.get('Authorization')).toBeNull()
   })
 
   it('throws GithubError with the response status on a non-ok response', async () => {

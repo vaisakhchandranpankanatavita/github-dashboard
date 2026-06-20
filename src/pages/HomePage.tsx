@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom'
 export function HomePage() {
   const [input, setInput] = useState('')
   const navigate = useNavigate()
-  const headingRef = useRef<HTMLHeadingElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    headingRef.current?.focus()
+    inputRef.current?.focus()
   }, [])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -19,15 +19,15 @@ export function HomePage() {
 
   return (
     <main>
-      <h1 ref={headingRef} tabIndex={-1}>GitHub Dashboard</h1>
+      <h1>GitHub Dashboard</h1>
       <form onSubmit={handleSubmit}>
         <input
+          ref={inputRef}
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Enter a GitHub username"
           aria-label="GitHub username"
-          autoFocus
         />
         <button type="submit">Search</button>
       </form>
