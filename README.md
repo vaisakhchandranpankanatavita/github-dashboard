@@ -46,17 +46,30 @@ npm run build       # typecheck + production build
 - **Recent commits** = last 10 commits on `repo.default_branch`. The count is a deliberate cut; the endpoint supports up to 100 per page if needed.
 - **Empty repo (409)** — GitHub returns 409 Conflict on the commits endpoint for a repo with no commits. `useCommits` catches this status specifically and returns `[]` rather than surfacing an error.
 - **Forks and archived repos** are included in the list without distinction. The API response includes `fork` and `archived` fields but they are not currently filtered or labelled.
-- **`per_page=100`** — GitHub's maximum per page. Pagination is deferred; users with more than 100 public repos will only see the first 100.
+- **`per_page=100`** — GitHub's maximum per page. The client fetches all pages by following the `Link: rel="next"` header until it is absent.
 - **API responses are cast, not validated.** The GitHub REST API is read-only, public, and well-documented. A schema mismatch produces a UI glitch rather than a security issue, so Zod validation is deferred — see below.
 
 ## With more time
 
-- **Pagination** for users with more than 100 repos — either infinite scroll or explicit page controls.
 - **Zod validation** on all API responses. Currently the client casts `unknown as T`; Zod would catch API drift at the boundary and give cleaner error messages.
 - **Fork toggle and archived badge** — the data is already in the API response; excluding forks by default and badging archived repos are straightforward filter/display additions.
 - **Debounced username autocomplete** using GitHub's user-search endpoint. Right now the full fetch fires on form submit only.
 - **Playwright E2E tests** covering the full navigation flow (home → list → detail → back) and filter interactions. The current suite covers units; the happy-path integration is only manually tested.
 - **Debounced filter inputs** — currently every keystroke reruns the filter memo; fine for 100 repos, unnecessary for any future paginated set.
+
+## Known issues / how I caught them
+
+**Repo list capped at 100 items regardless of actual repo count.**
+
+- **Cause.** GitHub REST API hard-caps `per_page` at 100 per request. The initial implementation made a single request and returned whatever came back — no pagination loop.
+- **How caught.** Tested against an account with a large number of public repos (`sindresorhus`, 1 100+ repos). The list showed exactly 100 entries and stopped; the same search on GitHub's own UI shows all of them. An account with fewer than 100 repos would never trigger the symptom.
+- **Fix.** `fetchUserRepos` now accumulates pages in a loop. After each response it reads the `Link` header and follows the `rel="next"` URL; when that header is absent the loop ends. The fix is in `src/lib/github/client.ts`.
+
+**Post-fix code review surfaced 7 secondary issues in the pagination implementation.**
+
+- **How caught.** The `code-reviewer` subagent reviewed the pagination diff cold (no conversation context) across correctness, removed-behaviour, cross-file, and conventions angles.
+- **Triage.** Four were real bugs and got fixed immediately: the TanStack Query retry handler restarting the entire page loop from page 1 on any transient error; `fetchUserRepos` ignoring the `AbortSignal` TanStack provides (loop continued fetching after the query was cancelled); `res.json()` throwing a raw `SyntaxError` on non-JSON 200 responses rather than a typed `GithubError`; and no maximum-page guard on the `while` loop. One was deferred to the "with more time" list (pagination test coverage). Two were declined as speculative for this project's actual scale: guarding `get<T>` against misuse on hypothetical future paginated endpoints, and extracting the hard-coded `https://api.github.com` base URL into a constant when there is no second environment to point it at.
+- **Why this is here.** Not every flagged issue is worth fixing. The review process includes deciding what is real risk versus what is low-impact or speculative — acting on everything a reviewer surfaces without that judgement is its own failure mode.
 
 ## Working with Claude Code
 
