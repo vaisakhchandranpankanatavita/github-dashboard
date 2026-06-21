@@ -5,12 +5,12 @@ import type { GithubRepo } from '../lib/github/index.ts'
 export function useRepos(username: string) {
   return useQuery<GithubRepo[], Error>({
     queryKey: ['repos', username] as const,
-    queryFn: () => fetchUserRepos(username),
+    queryFn: ({ signal }) => fetchUserRepos(username, signal),
     enabled: username !== '',
     staleTime: 60_000,
-    retry: (failureCount, error) => {
-      if (error instanceof GithubError && error.status === 404) return false
-      return failureCount < 3
-    },
+    // Pagination fetches all pages sequentially before resolving. Retrying restarts
+    // from page 1, re-issuing every already-fetched request and worsening rate-limit
+    // pressure on failure. A failed search is recoverable by re-submitting; no retry.
+    retry: false,
   })
 }
