@@ -29,6 +29,7 @@ export function RepoDetailPage() {
     <main>
       <nav aria-label="Breadcrumb">
         <Link
+          className="back-link"
           to={`/user/${username}`}
           aria-label={`Back to ${username}'s repositories`}
         >
@@ -45,8 +46,8 @@ export function RepoDetailPage() {
         )}
         {repoQuery.data !== undefined && (
           <>
-            <h1 ref={headingRef} tabIndex={-1}>{repoQuery.data.name}</h1>
-            {repoQuery.data.description !== null && <p>{repoQuery.data.description}</p>}
+            <h1 className="detail-title" ref={headingRef} tabIndex={-1}>{repoQuery.data.name}</h1>
+            {repoQuery.data.description !== null && <p className="detail-description">{repoQuery.data.description}</p>}
             <ul className="repo-stats" aria-label="Repository statistics">
               <li><span aria-hidden="true">★</span> {repoQuery.data.stargazers_count}<span className="sr-only"> stars</span></li>
               <li>{repoQuery.data.forks_count} forks</li>
@@ -58,7 +59,7 @@ export function RepoDetailPage() {
 
       {repoQuery.data !== undefined && (
         <section aria-label="Language breakdown">
-          <h2>Languages</h2>
+          <h2 className="section-heading">Languages</h2>
           {languagesQuery.isLoading && <p>Loading languages…</p>}
           {languagesQuery.isError && <p>Error loading languages: {languagesQuery.error.message}</p>}
           {languagesQuery.data !== undefined && (
@@ -71,7 +72,7 @@ export function RepoDetailPage() {
 
       {repoQuery.data !== undefined && (
         <section aria-label="Recent commits">
-          <h2>Recent commits</h2>
+          <h2 className="section-heading">Recent commits</h2>
           {commitsQuery.isLoading && <p>Loading commits…</p>}
           {commitsQuery.isError && <p>Error loading commits: {commitsQuery.error.message}</p>}
           {commitsQuery.data !== undefined && (
@@ -84,14 +85,16 @@ export function RepoDetailPage() {
                     const author = commit.author?.login ?? commit.commit.author.name
                     return (
                       <li key={commit.sha}>
-                        <a href={commit.html_url} target="_blank" rel="noreferrer">
+                        <a className="commit-message" href={commit.html_url} target="_blank" rel="noreferrer">
                           {firstLine}
                           <span className="sr-only"> (opens in new tab)</span>
                         </a>
-                        <span> — {author}</span>
-                        <time dateTime={commit.commit.author.date}>
-                          {' '}{new Date(commit.commit.author.date).toLocaleDateString()}
-                        </time>
+                        <div className="commit-meta">
+                          <span>{author}</span>
+                          <time dateTime={commit.commit.author.date}>
+                            {' — '}{new Date(commit.commit.author.date).toLocaleDateString()}
+                          </time>
+                        </div>
                       </li>
                     )
                   })}

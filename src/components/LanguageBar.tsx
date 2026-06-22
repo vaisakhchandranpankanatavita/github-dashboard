@@ -1,6 +1,5 @@
 import type { GithubLanguages } from '../lib/github/index.ts'
-
-const COLORS = ['#3178c6', '#f1e05a', '#e34c26', '#563d7c', '#00ADD8', '#3572A5', '#b07219', '#A97BFF']
+import { getLanguageColor } from '../lib/languageColors.ts'
 
 interface LanguageBarProps {
   languages: GithubLanguages
@@ -11,10 +10,10 @@ export function LanguageBar({ languages }: LanguageBarProps) {
   const total = entries.reduce((sum, [, b]) => sum + b, 0)
   if (total === 0) return null
 
-  const computed = entries.map(([lang, bytes], i) => ({
+  const computed = entries.map(([lang, bytes]) => ({
     lang,
     pct: Math.round((bytes / total) * 1000) / 10,
-    color: COLORS[i % COLORS.length] ?? '#ccc',
+    color: getLanguageColor(lang),
   }))
 
   const ariaLabel =
@@ -22,27 +21,15 @@ export function LanguageBar({ languages }: LanguageBarProps) {
 
   return (
     <div role="img" aria-label={ariaLabel}>
-      <div style={{ display: 'flex', height: '8px' }}>
+      <div className="lang-segments">
         {computed.map(({ lang, pct, color }) => (
           <div key={lang} style={{ width: `${pct}%`, backgroundColor: color, height: '100%' }} />
         ))}
       </div>
-      <ul
-        aria-hidden="true"
-        style={{ listStyle: 'none', padding: 0, margin: '8px 0 0', display: 'flex', flexWrap: 'wrap', gap: '8px' }}
-      >
+      <ul className="lang-legend" aria-hidden="true">
         {computed.map(({ lang, pct, color }) => (
-          <li key={lang} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '13px' }}>
-            <span
-              style={{
-                display: 'inline-block',
-                width: '10px',
-                height: '10px',
-                borderRadius: '50%',
-                backgroundColor: color,
-                flexShrink: 0,
-              }}
-            />
+          <li key={lang}>
+            <span className="lang-legend-dot" style={{ backgroundColor: color }} />
             {lang} {pct}%
           </li>
         ))}
