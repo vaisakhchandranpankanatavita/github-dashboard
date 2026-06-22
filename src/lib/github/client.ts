@@ -56,7 +56,10 @@ export async function fetchUserRepos(username: string, signal?: AbortSignal): Pr
     if (++pages > MAX_PAGES) {
       throw new GithubError(0, `Pagination safety limit (${MAX_PAGES} pages) exceeded for user "${username}"`)
     }
-    const { data, next: nextUrl } = await getUrl<GithubRepo[]>(next, signal)
+    const { data, next: nextUrl }: { data: GithubRepo[]; next: string | null } = await getUrl<GithubRepo[]>(
+      next,
+      signal,
+    )
     all.push(...data)
     next = nextUrl
   }

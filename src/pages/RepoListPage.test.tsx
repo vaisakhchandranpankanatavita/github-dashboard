@@ -17,7 +17,7 @@ describe('RepoListPage', () => {
       isLoading: false,
       isError: true,
       error: new GithubError(404, 'Not Found'),
-    } as ReturnType<typeof useRepos>)
+    } as unknown as ReturnType<typeof useRepos>)
   })
 
   it('renders the not-found message when the user does not exist', () => {

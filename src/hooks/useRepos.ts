@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { fetchUserRepos, GithubError } from '../lib/github/index.ts'
+import { fetchUserRepos } from '../lib/github/index.ts'
 import type { GithubRepo } from '../lib/github/index.ts'
 
 export function useRepos(username: string) {
