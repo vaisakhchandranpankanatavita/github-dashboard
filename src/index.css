@@ -114,9 +114,10 @@ h2[tabindex="-1"]:focus {
   border-radius: var(--radius-md);
   color: var(--color-text-primary);
   font-size: var(--font-base);
-  outline: none;
 }
 
+/* :focus (not :focus-visible) keeps the design's soft glow for mouse users;
+   the global :focus-visible rule still draws the accent ring for keyboard users. */
 .search-input:focus {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
@@ -176,7 +177,6 @@ h2[tabindex="-1"]:focus {
   border-radius: var(--radius-sm);
   color: var(--color-text-primary);
   font-size: var(--font-sm);
-  outline: none;
 }
 
 .filter-control:focus {

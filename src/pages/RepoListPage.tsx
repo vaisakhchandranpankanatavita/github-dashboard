@@ -55,6 +55,9 @@ export function RepoListPage() {
     return (
       <main>
         {backLink}
+        <p className="sr-only" role="status" aria-live="polite">
+          Loading repositories for {username}…
+        </p>
         <ul className="repo-list" aria-hidden="true">
           {Array.from({ length: 6 }, (_, i) => (
             <li key={i} className="skeleton-row">
