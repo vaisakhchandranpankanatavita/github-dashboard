@@ -78,13 +78,6 @@ h2[tabindex="-1"]:focus {
   justify-content: center;
 }
 
-.home-icon {
-  width: 40px;
-  height: 40px;
-  color: var(--color-accent);
-  margin-bottom: var(--space-2);
-}
-
 .home-title {
   font-size: var(--font-2xl);
   font-weight: 700;
@@ -118,7 +111,7 @@ h2[tabindex="-1"]:focus {
 
 /* :focus (not :focus-visible) keeps the design's soft glow for mouse users;
    the global :focus-visible rule still draws the accent ring for keyboard users. */
-.search-input:focus {
+.search-input:focus:not(:focus-visible) {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
 }
@@ -179,7 +172,7 @@ h2[tabindex="-1"]:focus {
   font-size: var(--font-sm);
 }
 
-.filter-control:focus {
+.filter-control:focus:not(:focus-visible) {
   border-color: var(--color-accent);
   box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
 }

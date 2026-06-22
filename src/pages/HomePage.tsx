@@ -19,20 +19,6 @@ export function HomePage() {
 
   return (
     <main className="home">
-      <svg
-        className="home-icon"
-        viewBox="0 0 40 40"
-        fill="currentColor"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <rect x="2" y="4" width="10" height="14" rx="2" />
-        <rect x="15" y="4" width="10" height="14" rx="2" />
-        <rect x="28" y="4" width="10" height="14" rx="2" />
-        <rect x="2" y="22" width="10" height="14" rx="2" />
-        <rect x="15" y="22" width="10" height="14" rx="2" />
-        <rect x="28" y="22" width="10" height="14" rx="2" />
-      </svg>
       <h1 className="home-title">GitHub Dashboard</h1>
       <p className="home-subtitle">Explore public repositories by username</p>
       <form className="search-form" onSubmit={handleSubmit}>
